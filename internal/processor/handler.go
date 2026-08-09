@@ -43,7 +43,10 @@ func TokenizeHandler(p *Processor) http.HandlerFunc {
 			CardholderName: req.CardholderName,
 		})
 		if err != nil {
-			writeJSONError(w, http.StatusUnprocessableEntity, "card details could not be validated")
+			// err's message is a validation reason only (e.g. "card number
+			// fails checksum validation") — it never includes the raw card
+			// number/CVV, so it's safe to return to the client.
+			writeJSONError(w, http.StatusUnprocessableEntity, err.Error())
 			return
 		}
 

@@ -38,9 +38,6 @@ web/                       static frontend (login, register, dashboard, admin)
 
 ## Prerequisites
 
-This environment does not have Go or Docker installed, so the code has been written
-carefully but **not yet compiled or run**. To run it you'll need, on your own machine:
-
 - [Go 1.22+](https://go.dev/dl/)
 - PostgreSQL 13+ (either a local install, or Docker so you can use the provided
   `docker-compose.yml`)
@@ -120,7 +117,20 @@ table is empty — no separate migration step to remember.
 
 ## Manual verification
 
-Since Go isn't available in this sandbox, none of the code above has been compiled,
-linted, or exercised yet. Please run `go build ./...` after `go mod tidy` and try the
-flows in step 5 above; if anything doesn't compile or misbehaves, tell me the error and
-I'll fix it.
+`go build ./...` and `go vet ./...` both pass cleanly. The full flow has been exercised
+end-to-end against a real local PostgreSQL instance: register → auto-promote to admin →
+browse gifts → tokenize + save a card → checkout (both a successful charge and a
+declined `...0002` card) → order history → delete a card that has order history against
+it (order history correctly keeps its denormalized `masked_card` snapshot even after the
+card row is gone) → admin gift CRUD, including the 409 you get if you try to hard-delete
+a gift that already has orders → duplicate-email rejection → unauthenticated-request
+rejection.
+
+Two real bugs turned up during that testing pass and are already fixed in the code
+above:
+1. `ListPaymentMethods`/`ListUsers` returned a nil Go slice when empty, which
+   `encoding/json` serializes as `null` instead of `[]`, breaking the frontend's
+   `cards.length` check.
+2. A declined charge returned HTTP 402, which made the frontend's fetch wrapper treat a
+   successfully-recorded-but-declined order as a network error instead of showing the
+   normal "payment failed" message.

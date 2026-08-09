@@ -82,7 +82,7 @@ func (s *Store) ListUsers() ([]models.User, error) {
 	}
 	defer rows.Close()
 
-	var users []models.User
+	users := []models.User{}
 	for rows.Next() {
 		var u models.User
 		if err := rows.Scan(&u.ID, &u.Email, &u.PasswordHash, &u.Name, &u.Phone, &u.IsAdmin, &u.CreatedAt, &u.UpdatedAt); err != nil {

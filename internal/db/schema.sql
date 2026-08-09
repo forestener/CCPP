@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS orders (
     id                    UUID PRIMARY KEY,
     user_id               UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     gift_id               UUID NOT NULL REFERENCES gifts(id),
-    payment_method_id     UUID NOT NULL REFERENCES payment_methods(id),
+    payment_method_id     UUID REFERENCES payment_methods(id) ON DELETE SET NULL,
     amount_cents          INT NOT NULL,
     currency              TEXT NOT NULL,
     status                TEXT NOT NULL,
@@ -72,3 +72,13 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     details        TEXT NOT NULL DEFAULT '',
     created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- A saved card must always be deletable (FR-9), even after it's been used
+-- in a past order — order history already keeps its own denormalized
+-- masked_card snapshot, so the FK doesn't need to block deletion. These
+-- ALTER statements bring a database created before this rule was added up
+-- to date; they're safe to re-run on every startup.
+ALTER TABLE orders ALTER COLUMN payment_method_id DROP NOT NULL;
+ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_payment_method_id_fkey;
+ALTER TABLE orders ADD CONSTRAINT orders_payment_method_id_fkey
+    FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id) ON DELETE SET NULL;

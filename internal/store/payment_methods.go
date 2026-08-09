@@ -66,7 +66,7 @@ func (s *Store) ListPaymentMethods(userID string) ([]models.PaymentMethod, error
 	}
 	defer rows.Close()
 
-	var methods []models.PaymentMethod
+	methods := []models.PaymentMethod{}
 	for rows.Next() {
 		var pm models.PaymentMethod
 		if err := rows.Scan(&pm.ID, &pm.UserID, &pm.ProcessorToken, &pm.Brand, &pm.Last4, &pm.ExpMonth, &pm.ExpYear, &pm.CardholderName, &pm.IsDefault, &pm.CreatedAt); err != nil {

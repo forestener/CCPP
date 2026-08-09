@@ -81,11 +81,11 @@ func (api *API) handleCreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	status := http.StatusCreated
-	if order.Status != "succeeded" {
-		status = http.StatusPaymentRequired
-	}
-	writeJSON(w, status, order)
+	// The order resource itself was created successfully either way — a
+	// declined charge is a valid business outcome captured in order.Status,
+	// not an HTTP-level error, so the response stays 201 and callers branch
+	// on the status field.
+	writeJSON(w, http.StatusCreated, order)
 }
 
 func (api *API) handleListOrders(w http.ResponseWriter, r *http.Request) {

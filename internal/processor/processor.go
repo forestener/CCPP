@@ -69,17 +69,23 @@ type TokenizeResult struct {
 // display metadata. The raw number/CVV are never stored or returned.
 func (p *Processor) Tokenize(req TokenizeRequest) (TokenizeResult, error) {
 	number := strings.ReplaceAll(strings.TrimSpace(req.CardNumber), " ", "")
-	if !isDigits(number) || len(number) < 12 || len(number) > 19 || !luhnValid(number) {
-		return TokenizeResult{}, ErrInvalidCard
+	if !isDigits(number) || len(number) < 12 || len(number) > 19 {
+		return TokenizeResult{}, fmt.Errorf("%w: card number must be 12-19 digits", ErrInvalidCard)
+	}
+	if !luhnValid(number) {
+		return TokenizeResult{}, fmt.Errorf("%w: card number fails checksum validation", ErrInvalidCard)
 	}
 	if !isDigits(req.CVV) || len(req.CVV) < 3 || len(req.CVV) > 4 {
-		return TokenizeResult{}, ErrInvalidCard
+		return TokenizeResult{}, fmt.Errorf("%w: CVV must be 3-4 digits", ErrInvalidCard)
 	}
 	if strings.TrimSpace(req.CardholderName) == "" {
-		return TokenizeResult{}, ErrInvalidCard
+		return TokenizeResult{}, fmt.Errorf("%w: cardholder name is required", ErrInvalidCard)
+	}
+	if req.ExpMonth < 1 || req.ExpMonth > 12 {
+		return TokenizeResult{}, fmt.Errorf("%w: expiry month must be between 1 and 12", ErrInvalidCard)
 	}
 	if !validExpiry(req.ExpMonth, req.ExpYear) {
-		return TokenizeResult{}, ErrInvalidCard
+		return TokenizeResult{}, fmt.Errorf("%w: card is expired (expiry must be after the current month)", ErrInvalidCard)
 	}
 
 	brand := detectBrand(number)

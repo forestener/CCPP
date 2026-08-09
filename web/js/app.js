@@ -3,6 +3,16 @@ requireAuth();
 let currentUser = null;
 let selectedGift = null;
 
+// Keep the expiry-year bounds tied to today's date instead of a hardcoded
+// value that would silently go stale (and reject valid future years, or
+// wrongly accept already-expired ones).
+(() => {
+  const currentYear = new Date().getFullYear();
+  const yearInput = document.getElementById("expYear");
+  yearInput.min = currentYear;
+  yearInput.max = currentYear + 30;
+})();
+
 // ---- Tabs ----
 document.querySelectorAll(".tab-btn").forEach((btn) => {
   btn.addEventListener("click", () => {

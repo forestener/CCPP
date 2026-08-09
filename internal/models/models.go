@@ -50,7 +50,9 @@ type Order struct {
 	ID                string    `json:"id"`
 	UserID            string    `json:"user_id"`
 	GiftID            string    `json:"gift_id"`
-	PaymentMethodID   string    `json:"payment_method_id"`
+	// PaymentMethodID is nil if the card used for this order has since been
+	// deleted; MaskedCard below still shows what was charged at the time.
+	PaymentMethodID   *string   `json:"payment_method_id"`
 	AmountCents       int       `json:"amount_cents"`
 	Currency          string    `json:"currency"`
 	Status            string    `json:"status"`

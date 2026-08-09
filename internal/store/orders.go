@@ -24,7 +24,7 @@ func (s *Store) CreateOrder(o NewOrder) (models.Order, error) {
 		ID:                ids.New(),
 		UserID:            o.UserID,
 		GiftID:            o.GiftID,
-		PaymentMethodID:   o.PaymentMethodID,
+		PaymentMethodID:   &o.PaymentMethodID,
 		AmountCents:       o.AmountCents,
 		Currency:          o.Currency,
 		Status:            o.Status,

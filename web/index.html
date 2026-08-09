@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GiftPay</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="center-page">
+    <div class="auth-card" style="text-align:center;">
+      <h1 class="brand">GiftPay</h1>
+      <p class="muted">Save a card, browse gifts, pay in a click.</p>
+      <div style="margin-top:24px; display:flex; flex-direction:column; gap:10px;">
+        <a class="btn" href="/login.html" style="text-decoration:none;">Log in</a>
+        <a class="btn secondary" href="/register.html" style="text-decoration:none;">Create an account</a>
+      </div>
+    </div>
+  </div>
+  <script src="/js/api.js"></script>
+  <script>
+    if (API.isLoggedIn()) window.location.href = "/dashboard.html";
+  </script>
+</body>
+</html>

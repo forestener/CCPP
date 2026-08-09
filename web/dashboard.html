@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard - GiftPay</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="topnav">
+    <a href="/dashboard.html" class="brand">GiftPay</a>
+    <div class="links">
+      <span class="muted" id="welcomeText"></span>
+      <a href="/admin.html" id="adminLink" class="hidden">Admin</a>
+      <a href="#" id="logoutLink">Log out</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="gifts">Gifts</button>
+      <button class="tab-btn" data-tab="cards">Payment Methods</button>
+      <button class="tab-btn" data-tab="orders">Order History</button>
+      <button class="tab-btn" data-tab="profile">Profile</button>
+    </div>
+
+    <div id="globalMsg"></div>
+
+    <!-- Gifts -->
+    <section id="panel-gifts" class="panel active">
+      <h2>Choose a gift</h2>
+      <div id="giftsGrid" class="grid"><p class="muted">Loading gifts...</p></div>
+    </section>
+
+    <!-- Payment methods -->
+    <section id="panel-cards" class="panel">
+      <h2>Your saved cards</h2>
+      <div class="card" id="cardsList"><p class="muted">Loading cards...</p></div>
+
+      <div class="card">
+        <h3>Add a card</h3>
+        <p class="muted">Card details are sent straight to the (simulated) payment processor and never touch the GiftPay server &mdash; we only store the token it returns.</p>
+        <form id="addCardForm">
+          <label for="cardholderName">Name on card</label>
+          <input id="cardholderName" required />
+
+          <label for="cardNumber">Card number</label>
+          <input id="cardNumber" required inputmode="numeric" placeholder="4242 4242 4242 4242" autocomplete="cc-number" />
+
+          <div class="row">
+            <div>
+              <label for="expMonth">Exp. month</label>
+              <input id="expMonth" type="number" min="1" max="12" required autocomplete="cc-exp-month" />
+            </div>
+            <div>
+              <label for="expYear">Exp. year</label>
+              <input id="expYear" type="number" min="2024" max="2060" required autocomplete="cc-exp-year" />
+            </div>
+            <div>
+              <label for="cvv">CVV</label>
+              <input id="cvv" required inputmode="numeric" autocomplete="cc-csc" />
+            </div>
+          </div>
+
+          <label><input type="checkbox" id="makeDefault" style="width:auto; display:inline-block;" /> Set as default card</label>
+
+          <button type="submit" style="margin-top:14px;">Save card</button>
+        </form>
+        <p class="muted" style="margin-top:10px;">Test cards: any Luhn-valid number works. End the number in <code>0002</code> to simulate a declined charge later.</p>
+      </div>
+    </section>
+
+    <!-- Orders -->
+    <section id="panel-orders" class="panel">
+      <h2>Order history</h2>
+      <div class="card">
+        <table id="ordersTable">
+          <thead><tr><th>Date</th><th>Gift</th><th>Amount</th><th>Card</th><th>Status</th></tr></thead>
+          <tbody><tr><td colspan="5" class="muted">Loading orders...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Profile -->
+    <section id="panel-profile" class="panel">
+      <h2>Your profile</h2>
+      <div class="card" style="max-width:420px;">
+        <form id="profileForm">
+          <label for="profileEmail">Email</label>
+          <input id="profileEmail" disabled />
+
+          <label for="profileName">Name</label>
+          <input id="profileName" required />
+
+          <label for="profilePhone">Phone</label>
+          <input id="profilePhone" />
+
+          <button type="submit" style="margin-top:14px;">Save changes</button>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <!-- Checkout modal -->
+  <div id="checkoutModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <h3>Pay with a saved card</h3>
+      <p id="checkoutGiftLabel" class="muted"></p>
+      <div id="checkoutCardOptions"></div>
+      <div id="checkoutMsg"></div>
+      <div class="row" style="margin-top:16px;">
+        <button class="secondary" id="checkoutCancel">Cancel</button>
+        <button id="checkoutConfirm">Pay now</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

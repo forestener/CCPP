@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - GiftPay</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="topnav">
+    <a href="/dashboard.html" class="brand">GiftPay Admin</a>
+    <div class="links">
+      <a href="/dashboard.html">Back to app</a>
+      <a href="#" id="logoutLink">Log out</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="gifts">Gift Catalog</button>
+      <button class="tab-btn" data-tab="orders">All Orders</button>
+      <button class="tab-btn" data-tab="users">Customers</button>
+    </div>
+
+    <div id="globalMsg"></div>
+
+    <section id="panel-gifts" class="panel active">
+      <h2>Gift catalog</h2>
+
+      <div class="card">
+        <h3 id="giftFormTitle">Add a gift</h3>
+        <form id="giftForm">
+          <input type="hidden" id="giftId" />
+          <label for="giftName">Name</label>
+          <input id="giftName" required />
+
+          <label for="giftDescription">Description</label>
+          <textarea id="giftDescription" rows="2"></textarea>
+
+          <div class="row">
+            <div>
+              <label for="giftPrice">Price (USD)</label>
+              <input id="giftPrice" type="number" min="0.01" step="0.01" required />
+            </div>
+            <div>
+              <label for="giftImage">Image URL</label>
+              <input id="giftImage" />
+            </div>
+          </div>
+
+          <label><input type="checkbox" id="giftActive" checked style="width:auto; display:inline-block;" /> Active</label>
+
+          <div class="row" style="margin-top:14px;">
+            <button type="submit" id="giftSubmitBtn">Add gift</button>
+            <button type="button" class="secondary hidden" id="giftCancelBtn">Cancel edit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <table id="giftsTable">
+          <thead><tr><th>Name</th><th>Price</th><th>Active</th><th></th></tr></thead>
+          <tbody><tr><td colspan="4" class="muted">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="panel-orders" class="panel">
+      <h2>All orders</h2>
+      <div class="card">
+        <table id="ordersTable">
+          <thead><tr><th>Date</th><th>Customer</th><th>Amount</th><th>Card</th><th>Status</th></tr></thead>
+          <tbody><tr><td colspan="5" class="muted">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="panel-users" class="panel">
+      <h2>Customers</h2>
+      <div class="card">
+        <table id="usersTable">
+          <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Admin</th></tr></thead>
+          <tbody><tr><td colspan="4" class="muted">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

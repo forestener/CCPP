@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log in - GiftPay</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="center-page">
+    <div class="auth-card">
+      <a href="/" class="brand">GiftPay</a>
+      <h2>Log in</h2>
+      <div id="msg"></div>
+      <form id="loginForm">
+        <label for="email">Email</label>
+        <input id="email" type="email" required autocomplete="email" />
+
+        <label for="password">Password</label>
+        <input id="password" type="password" required autocomplete="current-password" />
+
+        <button type="submit" style="width:100%; margin-top:10px;">Log in</button>
+      </form>
+      <p class="muted" style="margin-top:16px;">No account yet? <a href="/register.html">Sign up</a></p>
+    </div>
+  </div>
+  <script src="/js/api.js"></script>
+  <script>
+    if (API.isLoggedIn()) window.location.href = "/dashboard.html";
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("msg");
+      msg.innerHTML = "";
+      try {
+        const data = await API.post("/api/auth/login", {
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value,
+        });
+        API.setToken(data.token);
+        window.location.href = "/dashboard.html";
+      } catch (err) {
+        msg.innerHTML = `<div class="msg error">${escapeHtml(err.message)}</div>`;
+      }
+    });
+  </script>
+</body>
+</html>

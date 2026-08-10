@@ -147,3 +147,4 @@ func (api *API) logAdminAction(r *http.Request, action, details string) {
 	claims, _ := auth.ClaimsFromContext(r.Context())
 	_ = api.Store.LogAdminAction(claims.UserID, action, details)
 }
+

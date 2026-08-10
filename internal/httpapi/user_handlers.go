@@ -48,3 +48,4 @@ func (api *API) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusOK, toUserSummary(user.ID, user.Email, user.Name, user.Phone, user.IsAdmin))
 }
+

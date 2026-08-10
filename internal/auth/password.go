@@ -16,3 +16,4 @@ func HashPassword(plaintext string) (string, error) {
 func CheckPassword(hash, plaintext string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(plaintext)) == nil
 }
+

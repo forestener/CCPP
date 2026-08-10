@@ -18,3 +18,4 @@ services:
 
 volumes:
   giftpay_pgdata:
+

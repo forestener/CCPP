@@ -34,3 +34,4 @@ func Open(dsn string) (*sql.DB, error) {
 	conn.Close()
 	return nil, fmt.Errorf("db: could not connect after retries: %w", pingErr)
 }
+

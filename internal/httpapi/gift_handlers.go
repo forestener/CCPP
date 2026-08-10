@@ -35,3 +35,4 @@ func (api *API) handleGetGift(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusOK, gift)
 }
+

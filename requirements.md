@@ -117,3 +117,4 @@ GET    /api/orders/{id}
 3. Do you need multi-currency support?
 4. What's your expected scale (helps decide DB choice, caching needs)?
 5. Do you need an admin dashboard as part of this app, or is that a separate internal tool?
+

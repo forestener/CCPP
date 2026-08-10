@@ -102,3 +102,4 @@ func sign(secret []byte, input string) []byte {
 	mac.Write([]byte(input))
 	return mac.Sum(nil)
 }
+

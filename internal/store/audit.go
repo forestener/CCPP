@@ -22,3 +22,4 @@ func (s *Store) LogAdminAction(actorUserID, action, details string) error {
 	)
 	return err
 }
+

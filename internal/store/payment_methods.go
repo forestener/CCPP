@@ -149,3 +149,4 @@ func (s *Store) SetDefaultPaymentMethod(id, userID string) error {
 
 	return tx.Commit()
 }
+

@@ -91,3 +91,4 @@ func (s *Store) queryOrders(query string, args ...any) ([]models.Order, error) {
 	}
 	return orders, rows.Err()
 }
+

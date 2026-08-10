@@ -65,3 +65,4 @@ func writeUnauthorized(w http.ResponseWriter, message string) {
 	w.WriteHeader(http.StatusUnauthorized)
 	w.Write([]byte(`{"error":"` + message + `"}`))
 }
+

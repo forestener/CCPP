@@ -134,3 +134,4 @@ func (api *API) handleLogout(w http.ResponseWriter, r *http.Request) {
 func toUserSummary(id, email, name, phone string, isAdmin bool) userSummary {
 	return userSummary{ID: id, Email: email, Name: name, Phone: phone, IsAdmin: isAdmin}
 }
+

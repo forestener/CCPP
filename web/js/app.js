@@ -281,3 +281,4 @@ document.getElementById("profileForm").addEventListener("submit", async (e) => {
 });
 
 init();
+

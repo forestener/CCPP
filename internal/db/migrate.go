@@ -18,3 +18,4 @@ func Migrate(conn *sql.DB) error {
 	}
 	return nil
 }
+

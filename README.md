@@ -134,3 +134,4 @@ above:
 2. A declined charge returned HTTP 402, which made the frontend's fetch wrapper treat a
    successfully-recorded-but-declined order as a network error instead of showing the
    normal "payment failed" message.
+

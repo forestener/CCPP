@@ -61,3 +61,4 @@ type Order struct {
 	FailureReason     *string   `json:"failure_reason,omitempty"`
 	CreatedAt         time.Time `json:"created_at"`
 }
+

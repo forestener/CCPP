@@ -98,3 +98,4 @@ func (s *Store) DeleteGift(id string) error {
 	}
 	return nil
 }
+

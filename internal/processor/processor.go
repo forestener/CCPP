@@ -243,3 +243,4 @@ func isInRange4(number string, low, high int) bool {
 	fmt.Sscanf(number[:4], "%d", &prefix)
 	return prefix >= low && prefix <= high
 }
+

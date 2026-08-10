@@ -27,3 +27,4 @@ func (sw *statusWriter) WriteHeader(status int) {
 	sw.status = status
 	sw.ResponseWriter.WriteHeader(status)
 }
+

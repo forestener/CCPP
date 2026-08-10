@@ -82,3 +82,4 @@ ALTER TABLE orders ALTER COLUMN payment_method_id DROP NOT NULL;
 ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_payment_method_id_fkey;
 ALTER TABLE orders ADD CONSTRAINT orders_payment_method_id_fkey
     FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id) ON DELETE SET NULL;
+

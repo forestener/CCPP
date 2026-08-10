@@ -35,3 +35,4 @@ func isValidPassword(password string) bool {
 func isNonEmpty(s string) bool {
 	return strings.TrimSpace(s) != ""
 }
+

@@ -36,6 +36,7 @@ func NewRouter(api *API, webDir string) http.Handler {
 
 	// --- Authenticated (customer) ---
 	auth1 := func(h http.HandlerFunc) http.HandlerFunc { return auth.RequireAuth(api.JWTSecret, h) }
+	mux.HandleFunc("GET /scanner-auth-check", auth1(api.handleScannerAuthCheck))
 	mux.HandleFunc("GET /api/me", auth1(api.handleGetMe))
 	mux.HandleFunc("PATCH /api/me", auth1(api.handleUpdateMe))
 	mux.HandleFunc("POST /api/payment-methods", auth1(api.handleCreatePaymentMethod))

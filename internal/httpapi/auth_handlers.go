@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"errors"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -166,7 +167,28 @@ func (api *API) handleScannerLogin(w http.ResponseWriter, r *http.Request) {
 		Secure:   r.TLS != nil,
 		MaxAge:   int(api.TokenTTL.Seconds()),
 	})
-	http.Redirect(w, r, "/dashboard.html", http.StatusSeeOther)
+	http.Redirect(w, r, "/scanner-auth-check", http.StatusSeeOther)
+}
+
+func (api *API) handleScannerAuthCheck(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	_, _ = io.WriteString(w, `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scanner Auth Check - GiftPay</title>
+</head>
+<body>
+  <h1>Scanner authentication successful</h1>
+  <p>This page is only available after a successful authenticated sign-in.</p>
+  <ul>
+    <li><a href="/dashboard.html">Customer dashboard</a></li>
+    <li><a href="/api/me">Current user profile</a></li>
+    <li><a href="/api/gifts">Gift catalog</a></li>
+  </ul>
+</body>
+</html>`)
 }
 
 // handleLogout is a no-op beyond confirming the request: since sessions are

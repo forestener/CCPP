@@ -9,6 +9,7 @@ import (
 type contextKey string
 
 const claimsContextKey contextKey = "claims"
+const SessionCookieName = "giftpay_session"
 
 // RequireAuth validates the Authorization: Bearer <token> header and, on
 // success, injects the parsed Claims into the request context before
@@ -54,10 +55,14 @@ func ClaimsFromContext(ctx context.Context) (Claims, bool) {
 func bearerToken(r *http.Request) string {
 	h := r.Header.Get("Authorization")
 	const prefix = "Bearer "
-	if !strings.HasPrefix(h, prefix) {
+	if strings.HasPrefix(h, prefix) {
+		return strings.TrimSpace(strings.TrimPrefix(h, prefix))
+	}
+	cookie, err := r.Cookie(SessionCookieName)
+	if err != nil {
 		return ""
 	}
-	return strings.TrimSpace(strings.TrimPrefix(h, prefix))
+	return strings.TrimSpace(cookie.Value)
 }
 
 func writeUnauthorized(w http.ResponseWriter, message string) {
@@ -65,4 +70,3 @@ func writeUnauthorized(w http.ResponseWriter, message string) {
 	w.WriteHeader(http.StatusUnauthorized)
 	w.Write([]byte(`{"error":"` + message + `"}`))
 }
-

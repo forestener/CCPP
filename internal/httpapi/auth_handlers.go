@@ -3,6 +3,7 @@ package httpapi
 import (
 	"errors"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"giftpay/internal/auth"
@@ -123,15 +124,68 @@ func (api *API) handleLogin(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, authResponse{Token: token, User: toUserSummary(user.ID, user.Email, user.Name, user.Phone, user.IsAdmin)})
 }
 
+func (api *API) handleScannerLogin(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Redirect(w, r, "/scanner-login.html?error="+url.QueryEscape("invalid sign-in form"), http.StatusSeeOther)
+		return
+	}
+
+	email := strings.ToLower(strings.TrimSpace(r.FormValue("email")))
+	password := r.FormValue("password")
+	ip := realIP(r)
+	limiterKey := ip + ":" + email
+
+	if !api.LoginLimiter.Allow(limiterKey) {
+		http.Redirect(w, r, "/scanner-login.html?error="+url.QueryEscape("too many login attempts, please try again later"), http.StatusSeeOther)
+		return
+	}
+
+	user, err := api.Store.GetUserByEmail(email)
+	if err != nil || !auth.CheckPassword(user.PasswordHash, password) {
+		api.LoginLimiter.RecordFailure(limiterKey)
+		_ = api.Store.LogLoginAttempt(email, ip, false)
+		http.Redirect(w, r, "/scanner-login.html?error="+url.QueryEscape("invalid email or password"), http.StatusSeeOther)
+		return
+	}
+
+	api.LoginLimiter.Reset(limiterKey)
+	_ = api.Store.LogLoginAttempt(email, ip, true)
+
+	token, err := auth.GenerateToken(api.JWTSecret, user.ID, user.Email, user.IsAdmin, api.TokenTTL)
+	if err != nil {
+		http.Redirect(w, r, "/scanner-login.html?error="+url.QueryEscape("could not issue session token"), http.StatusSeeOther)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     auth.SessionCookieName,
+		Value:    token,
+		Path:     "/",
+		HttpOnly: false,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   r.TLS != nil,
+		MaxAge:   int(api.TokenTTL.Seconds()),
+	})
+	http.Redirect(w, r, "/dashboard.html", http.StatusSeeOther)
+}
+
 // handleLogout is a no-op beyond confirming the request: since sessions are
 // stateless JWTs, "logging out" means the client discards its token. A
 // production system wanting immediate server-side revocation would need a
 // token blacklist or short-lived tokens + refresh tokens.
 func (api *API) handleLogout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     auth.SessionCookieName,
+		Value:    "",
+		Path:     "/",
+		HttpOnly: false,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   r.TLS != nil,
+		MaxAge:   -1,
+	})
 	writeJSON(w, http.StatusOK, map[string]string{"status": "logged out"})
 }
 
 func toUserSummary(id, email, name, phone string, isAdmin bool) userSummary {
 	return userSummary{ID: id, Email: email, Name: name, Phone: phone, IsAdmin: isAdmin}
 }
-

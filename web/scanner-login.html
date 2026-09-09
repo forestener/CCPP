@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scanner Sign In - GiftPay</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="center-page">
+    <div class="auth-card">
+      <a href="/" class="brand">GiftPay</a>
+      <h2>Scanner sign in</h2>
+      <div id="msg"></div>
+      <p class="muted">This page is a scanner-compatible sign-in path that uses a standard form post and cookie-based session.</p>
+      <form method="post" action="/scanner-login">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required autocomplete="username" autocapitalize="none" spellcheck="false" />
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password" />
+
+        <button type="submit" style="width:100%; margin-top:10px;">Sign in</button>
+      </form>
+      <p class="muted" style="margin-top:16px;">For normal interactive use, you can still use <a href="/login.html">the standard login page</a>.</p>
+    </div>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+    if (error) {
+      document.getElementById("msg").innerHTML = `<div class="msg error"></div>`;
+      document.querySelector("#msg .msg").textContent = error;
+    }
+  </script>
+</body>
+</html>

@@ -2,9 +2,19 @@
 // normalizes errors. Kept dependency-free (no build step) on purpose.
 const API = {
   TOKEN_KEY: "giftpay_token",
+  COOKIE_TOKEN_KEY: "giftpay_session",
+
+  getCookie(name) {
+    const prefix = name + "=";
+    return document.cookie
+      .split(";")
+      .map((part) => part.trim())
+      .find((part) => part.startsWith(prefix))
+      ?.slice(prefix.length) || null;
+  },
 
   getToken() {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return localStorage.getItem(this.TOKEN_KEY) || this.getCookie(this.COOKIE_TOKEN_KEY);
   },
   setToken(token) {
     if (token) localStorage.setItem(this.TOKEN_KEY, token);

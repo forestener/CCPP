@@ -29,6 +29,7 @@ func NewRouter(api *API, webDir string) http.Handler {
 	mux.HandleFunc("POST /api/auth/register", api.handleRegister)
 	mux.HandleFunc("POST /api/auth/login", api.handleLogin)
 	mux.HandleFunc("POST /api/auth/logout", api.handleLogout)
+	mux.HandleFunc("POST /scanner-login", api.handleScannerLogin)
 	mux.HandleFunc("POST /processor/tokenize", processor.TokenizeHandler(api.Processor))
 	mux.HandleFunc("GET /api/gifts", api.handleListGifts)
 	mux.HandleFunc("GET /api/gifts/{id}", api.handleGetGift)
@@ -63,4 +64,3 @@ func NewRouter(api *API, webDir string) http.Handler {
 func (api *API) handleHealth(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
-

@@ -96,6 +96,22 @@ input, select, textarea {
   font-family: inherit;
 }
 
+.password-field {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.password-field input {
+  flex: 1;
+}
+
+.password-toggle {
+  flex: 0 0 auto;
+  min-width: 74px;
+  padding: 9px 12px;
+}
+
 button, .btn {
   cursor: pointer;
   border: none;

@@ -14,10 +14,13 @@
       <div id="msg"></div>
       <form id="loginForm">
         <label for="email">Email</label>
-        <input id="email" type="email" required autocomplete="email" />
+        <input id="email" name="email" type="email" required autocomplete="email" autocapitalize="none" spellcheck="false" />
 
         <label for="password">Password</label>
-        <input id="password" type="password" required autocomplete="current-password" />
+        <div class="password-field">
+          <input id="password" name="password" type="password" required autocomplete="current-password" />
+          <button type="button" class="secondary password-toggle" data-toggle-password="password">Show</button>
+        </div>
 
         <button type="submit" style="width:100%; margin-top:10px;">Log in</button>
       </form>
@@ -27,6 +30,15 @@
   <script src="/js/api.js"></script>
   <script>
     if (API.isLoggedIn()) window.location.href = "/dashboard.html";
+
+    document.querySelectorAll("[data-toggle-password]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = document.getElementById(button.dataset.togglePassword);
+        const show = input.type === "password";
+        input.type = show ? "text" : "password";
+        button.textContent = show ? "Hide" : "Show";
+      });
+    });
 
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();

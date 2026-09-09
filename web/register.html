@@ -14,17 +14,26 @@
       <div id="msg"></div>
       <form id="registerForm">
         <label for="name">Full name</label>
-        <input id="name" required autocomplete="name" />
+        <input id="name" name="name" required autocomplete="name" />
 
         <label for="email">Email</label>
-        <input id="email" type="email" required autocomplete="email" />
+        <input id="email" name="email" type="email" required autocomplete="email" autocapitalize="none" spellcheck="false" />
 
         <label for="phone">Phone (optional)</label>
-        <input id="phone" autocomplete="tel" />
+        <input id="phone" name="phone" autocomplete="tel" />
 
         <label for="password">Password</label>
-        <input id="password" type="password" required autocomplete="new-password" minlength="8" />
+        <div class="password-field">
+          <input id="password" name="password" type="password" required autocomplete="new-password" minlength="8" />
+          <button type="button" class="secondary password-toggle" data-toggle-password="password">Show</button>
+        </div>
         <p class="muted">At least 8 characters, with a letter and a digit.</p>
+
+        <label for="confirmPassword">Confirm password</label>
+        <div class="password-field">
+          <input id="confirmPassword" name="confirmPassword" type="password" required autocomplete="new-password" minlength="8" />
+          <button type="button" class="secondary password-toggle" data-toggle-password="confirmPassword">Show</button>
+        </div>
 
         <button type="submit" style="width:100%; margin-top:10px;">Sign up</button>
       </form>
@@ -35,16 +44,31 @@
   <script>
     if (API.isLoggedIn()) window.location.href = "/dashboard.html";
 
+    document.querySelectorAll("[data-toggle-password]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = document.getElementById(button.dataset.togglePassword);
+        const show = input.type === "password";
+        input.type = show ? "text" : "password";
+        button.textContent = show ? "Hide" : "Show";
+      });
+    });
+
     document.getElementById("registerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const msg = document.getElementById("msg");
       msg.innerHTML = "";
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      if (password !== confirmPassword) {
+        msg.innerHTML = `<div class="msg error">Passwords do not match.</div>`;
+        return;
+      }
       try {
         const data = await API.post("/api/auth/register", {
           name: document.getElementById("name").value,
           email: document.getElementById("email").value,
           phone: document.getElementById("phone").value,
-          password: document.getElementById("password").value,
+          password,
         });
         API.setToken(data.token);
         window.location.href = "/dashboard.html";

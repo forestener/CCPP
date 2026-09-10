@@ -135,3 +135,41 @@ above:
    successfully-recorded-but-declined order as a network error instead of showing the
    normal "payment failed" message.
 
+## AWS VM Deployment
+
+If you want to deploy CCPP to AWS with a VM as the host, use
+[`deploy-aws-vm.ps1`](deploy-aws-vm.ps1). The script automates:
+
+- ECR repository creation and image push
+- PostgreSQL RDS instance creation
+- Secrets Manager runtime config
+- EC2 instance creation with Docker installed through user-data
+- ALB creation and target registration
+- app container refresh through AWS Systems Manager
+
+Required local tools:
+
+- AWS CLI v2 authenticated against the target account
+- Docker
+
+Required inputs:
+
+- `DB_PASSWORD`
+- `JWT_SECRET` with at least 16 characters
+
+Example:
+
+```powershell
+$env:DB_PASSWORD="giftpay123"
+$env:JWT_SECRET="change-this-to-a-long-secret"
+powershell -ExecutionPolicy Bypass -File .\deploy-aws-vm.ps1 `
+  -Region ap-southeast-1 `
+  -SshCidr 203.0.113.10/32
+```
+
+Optional:
+
+- `-CertificateArn` to add an HTTPS listener on the ALB
+- `-KeyPairName` if you also want direct SSH access to the EC2 host
+- `-SkipImageBuild` if the `latest` image is already built locally
+- `-SkipDbWait` if you want the script to return before RDS finishes provisioning

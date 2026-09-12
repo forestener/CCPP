@@ -173,3 +173,59 @@ Optional:
 - `-KeyPairName` if you also want direct SSH access to the EC2 host
 - `-SkipImageBuild` if the `latest` image is already built locally
 - `-SkipDbWait` if you want the script to return before RDS finishes provisioning
+
+## ZAP Blackbox Scanning On AWS
+
+If you want to run OWASP ZAP automatically from a separate Linux VM against the AWS
+deployment, use the scripts in [`scripts/`](scripts/):
+
+- [`scripts/zap-passive-prod.sh`](scripts/zap-passive-prod.sh) for baseline passive
+  production scans
+- [`scripts/zap-active-prod.sh`](scripts/zap-active-prod.sh) for full active
+  production scans
+
+Copy [`scripts/zap-scan.env.example`](scripts/zap-scan.env.example) to
+`scripts/zap-scan.env` on the ZAP runner VM and update the values there.
+
+Example:
+
+```bash
+cp scripts/zap-scan.env.example scripts/zap-scan.env
+chmod +x scripts/zap-passive-prod.sh scripts/zap-active-prod.sh
+./scripts/zap-passive-prod.sh
+```
+
+For active scans, set `ZAP_ALLOW_ACTIVE_PRODUCTION_SCAN=true` in
+`scripts/zap-scan.env` before running:
+
+```bash
+./scripts/zap-active-prod.sh
+```
+
+Both scripts write timestamped HTML, JSON, and Markdown reports under `reports/` by
+default, or under `ZAP_REPORT_BASE_DIR` if you override it in the env file.
+
+The repo also includes [`scripts/export-zap-to-security-hub.py`](scripts/export-zap-to-security-hub.py),
+which converts ZAP JSON reports into AWS Security Hub findings through
+`securityhub batch-import-findings`. When `ZAP_EXPORT_SECURITY_HUB=true`, both scan
+scripts automatically call the exporter after a successful scan.
+
+To provision a dedicated AWS EC2 ZAP runner automatically, use
+[`deploy-zap-aws.ps1`](deploy-zap-aws.ps1). It creates the IAM role, instance
+profile, security group, and EC2 instance, installs Docker + cron, uploads the ZAP
+scripts, enables Security Hub export permissions, and schedules both passive and active
+production scans.
+
+Example:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy-zap-aws.ps1 `
+  -Region ap-southeast-1 `
+  -TargetUrl "https://ccpp-aws.forestener.com"
+```
+
+Useful options:
+
+- `-InstanceType t3.large` if you want more headroom for active scans
+- `-KeyPairName your-keypair -SshCidr 203.0.113.10/32` if you also want SSH access
+- `-PassiveCron` and `-ActiveCron` to adjust the schedules

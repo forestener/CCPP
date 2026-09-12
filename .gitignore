@@ -41,3 +41,6 @@ logs/
 # Docker volumes / data
 data/
 
+# ZAP scan outputs
+reports/
+scripts/zap-scan.env

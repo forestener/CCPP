@@ -172,3 +172,36 @@ th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: u
 .card-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
 .card-item:last-child { border-bottom: none; }
 
+.profile-photo-block {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.profile-photo-frame {
+  width: 112px;
+  height: 112px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-photo-placeholder {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+  padding: 0 10px;
+}
+

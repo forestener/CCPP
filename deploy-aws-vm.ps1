@@ -907,7 +907,11 @@ Write-Step "Log Docker into Amazon ECR"
 $loginPassword = Invoke-AwsText -Args @("ecr", "get-login-password", "--region", $Region)
 $loginPassword | docker login --username AWS --password-stdin $registryHost
 if ($LASTEXITCODE -ne 0) {
-    throw "docker login to ECR failed."
+    Write-Host "docker login via stdin failed, retrying with direct password argument" -ForegroundColor Yellow
+    & docker login --username AWS --password $loginPassword $registryHost
+    if ($LASTEXITCODE -ne 0) {
+        throw "docker login to ECR failed."
+    }
 }
 
 if (-not $SkipImageBuild) {

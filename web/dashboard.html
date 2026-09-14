@@ -85,6 +85,19 @@
     <section id="panel-profile" class="panel">
       <h2>Your profile</h2>
       <div class="card" style="max-width:420px;">
+        <div class="profile-photo-block">
+          <div class="profile-photo-frame">
+            <img id="profilePhotoPreview" class="hidden" alt="Profile photo preview" />
+            <div id="profilePhotoPlaceholder" class="profile-photo-placeholder">No photo</div>
+          </div>
+          <form id="profilePhotoForm">
+            <label for="profilePhoto">Profile photo</label>
+            <input id="profilePhoto" type="file" accept="image/png,image/jpeg,image/gif,image/webp" />
+            <p class="muted">Accepted formats: PNG, JPEG, GIF, and WebP. Max size: 5 MB.</p>
+            <button type="submit" style="margin-top:8px;">Upload photo</button>
+          </form>
+        </div>
+
         <form id="profileForm">
           <label for="profileEmail">Email</label>
           <input id="profileEmail" disabled />

@@ -16,7 +16,7 @@ func (api *API) handleGetMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, toUserSummary(user.ID, user.Email, user.Name, user.Phone, user.IsAdmin))
+	writeJSON(w, http.StatusOK, toUserSummary(user.ID, user.Email, user.Name, user.Phone, profilePhotoURLForUser(user), user.IsAdmin))
 }
 
 type updateMeRequest struct {
@@ -46,6 +46,5 @@ func (api *API) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, toUserSummary(user.ID, user.Email, user.Name, user.Phone, user.IsAdmin))
+	writeJSON(w, http.StatusOK, toUserSummary(user.ID, user.Email, user.Name, user.Phone, profilePhotoURLForUser(user), user.IsAdmin))
 }
-

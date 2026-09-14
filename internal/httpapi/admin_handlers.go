@@ -20,7 +20,7 @@ func (api *API) handleAdminListUsers(w http.ResponseWriter, r *http.Request) {
 
 	summaries := make([]userSummary, 0, len(users))
 	for _, u := range users {
-		summaries = append(summaries, toUserSummary(u.ID, u.Email, u.Name, u.Phone, u.IsAdmin))
+                summaries = append(summaries, toUserSummary(u.ID, u.Email, u.Name, u.Phone, "", u.IsAdmin))
 	}
 	writeJSON(w, http.StatusOK, summaries)
 }

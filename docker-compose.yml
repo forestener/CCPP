@@ -1,4 +1,23 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://giftpay:giftpay@postgres:5432/giftpay?sslmode=disable
+      JWT_SECRET: change-me-to-a-long-random-string
+      PORT: 8080
+      TOKEN_TTL: 1h
+      ADMIN_EMAIL: admin@example.com
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - giftpay_appdata:/app/data
+
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -17,5 +36,6 @@ services:
       retries: 10
 
 volumes:
+  giftpay_appdata:
   giftpay_pgdata:
 

@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash  TEXT NOT NULL,
     name           TEXT NOT NULL,
     phone          TEXT,
+    profile_photo_key TEXT,
+    profile_photo_content_type TEXT,
     is_admin       BOOLEAN NOT NULL DEFAULT FALSE,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at     TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -82,4 +84,7 @@ ALTER TABLE orders ALTER COLUMN payment_method_id DROP NOT NULL;
 ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_payment_method_id_fkey;
 ALTER TABLE orders ADD CONSTRAINT orders_payment_method_id_fkey
     FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id) ON DELETE SET NULL;
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo_key TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo_content_type TEXT;
 

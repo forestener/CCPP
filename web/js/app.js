@@ -2,6 +2,7 @@ requireAuth();
 
 let currentUser = null;
 let selectedGift = null;
+let profilePhotoObjectUrl = null;
 
 // Keep the expiry-year bounds tied to today's date instead of a hardcoded
 // value that would silently go stale (and reject valid future years, or
@@ -50,6 +51,7 @@ async function init() {
   document.getElementById("profileEmail").value = currentUser.email;
   document.getElementById("profileName").value = currentUser.name;
   document.getElementById("profilePhone").value = currentUser.phone || "";
+  loadProfilePhoto();
 
   loadGifts();
   loadCards();
@@ -277,6 +279,61 @@ document.getElementById("profileForm").addEventListener("submit", async (e) => {
     showGlobalMsg("Profile updated.", "success");
   } catch (err) {
     showGlobalMsg(err.message, "error");
+  }
+});
+
+async function loadProfilePhoto() {
+  const preview = document.getElementById("profilePhotoPreview");
+  const placeholder = document.getElementById("profilePhotoPlaceholder");
+
+  if (profilePhotoObjectUrl) {
+    URL.revokeObjectURL(profilePhotoObjectUrl);
+    profilePhotoObjectUrl = null;
+  }
+
+  if (!currentUser || !currentUser.profile_photo_url) {
+    preview.classList.add("hidden");
+    preview.removeAttribute("src");
+    placeholder.classList.remove("hidden");
+    return;
+  }
+
+  try {
+    const blob = await API.getBlob(currentUser.profile_photo_url);
+    profilePhotoObjectUrl = URL.createObjectURL(blob);
+    preview.src = profilePhotoObjectUrl;
+    preview.classList.remove("hidden");
+    placeholder.classList.add("hidden");
+  } catch (err) {
+    preview.classList.add("hidden");
+    preview.removeAttribute("src");
+    placeholder.classList.remove("hidden");
+  }
+}
+
+document.getElementById("profilePhotoForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const input = document.getElementById("profilePhoto");
+  const submitBtn = e.target.querySelector("button[type=submit]");
+  if (!input.files || input.files.length === 0) {
+    showGlobalMsg("Choose a photo first.", "error");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("photo", input.files[0]);
+
+  submitBtn.disabled = true;
+  try {
+    currentUser = await API.upload("/api/me/photo", formData);
+    await loadProfilePhoto();
+    input.value = "";
+    showGlobalMsg("Profile photo updated.", "success");
+  } catch (err) {
+    showGlobalMsg(err.message, "error");
+  } finally {
+    submitBtn.disabled = false;
   }
 });
 

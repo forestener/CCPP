@@ -48,12 +48,17 @@ func main() {
 	}
 
 	api := &httpapi.API{
-		Store:        dataStore,
-		Processor:    processor.New(),
-		JWTSecret:    cfg.JWTSecret,
-		TokenTTL:     cfg.TokenTTL,
-		LoginLimiter: auth.NewLoginLimiter(5, 15*time.Minute),
-		AdminEmail:   cfg.AdminEmail,
+		Store:           dataStore,
+		Processor:       processor.New(),
+		JWTSecret:       cfg.JWTSecret,
+		TokenTTL:        cfg.TokenTTL,
+		LoginLimiter:    auth.NewLoginLimiter(5, 15*time.Minute),
+		AdminEmail:      cfg.AdminEmail,
+		ProfilePhotoDir: "web/profile-photos",
+	}
+
+	if err := os.MkdirAll(api.ProfilePhotoDir, 0o755); err != nil {
+		log.Fatalf("profile photo directory: %v", err)
 	}
 
 	webDir := "web"
@@ -90,4 +95,3 @@ func main() {
 		log.Printf("graceful shutdown failed: %v", err)
 	}
 }
-

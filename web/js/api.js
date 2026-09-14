@@ -51,6 +51,54 @@ const API = {
     return data;
   },
 
+  async upload(path, formData) {
+    const headers = {};
+    const token = this.getToken();
+    if (token) headers["Authorization"] = "Bearer " + token;
+
+    const res = await fetch(path, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    let data = null;
+    const text = await res.text();
+    if (text) {
+      try { data = JSON.parse(text); } catch (e) { /* non-JSON response */ }
+    }
+
+    if (!res.ok) {
+      const message = (data && data.error) || res.statusText || "Request failed";
+      const err = new Error(message);
+      err.status = res.status;
+      err.data = data;
+      throw err;
+    }
+    return data;
+  },
+
+  async getBlob(path) {
+    const headers = {};
+    const token = this.getToken();
+    if (token) headers["Authorization"] = "Bearer " + token;
+
+    const res = await fetch(path, { headers });
+    if (!res.ok) {
+      let data = null;
+      const text = await res.text();
+      if (text) {
+        try { data = JSON.parse(text); } catch (e) { /* non-JSON response */ }
+      }
+      const message = (data && data.error) || res.statusText || "Request failed";
+      const err = new Error(message);
+      err.status = res.status;
+      err.data = data;
+      throw err;
+    }
+    return res.blob();
+  },
+
   get(path) { return this.request("GET", path); },
   post(path, body) { return this.request("POST", path, body); },
   patch(path, body) { return this.request("PATCH", path, body); },

@@ -20,10 +20,14 @@ WORKDIR /app
 
 RUN apk add --no-cache ca-certificates tzdata && \
     addgroup -S app && \
-    adduser -S -G app app
+    adduser -S -G app app && \
+    mkdir -p /app/data/profile-photos
 
 COPY --from=build /out/server /app/server
 COPY --from=build /src/web /app/web
+
+RUN mkdir -p /app/web/profile-photos && \
+    chown -R app:app /app
 
 ENV PORT=8080
 

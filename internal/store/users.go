@@ -24,7 +24,7 @@ func (s *Store) CreateUser(email, passwordHash, name, phone string) (models.User
 
 	err := s.DB.QueryRow(
 		`INSERT INTO users (id, email, password_hash, name, phone)
-		 VALUES ($1, $2, $3, $4, $5)
+                 VALUES ($1, $2, $3, $4, $5)
 		 RETURNING is_admin, created_at, updated_at`,
 		u.ID, u.Email, u.PasswordHash, u.Name, nullIfEmpty(u.Phone),
 	).Scan(&u.IsAdmin, &u.CreatedAt, &u.UpdatedAt)
@@ -40,13 +40,13 @@ func (s *Store) CreateUser(email, passwordHash, name, phone string) (models.User
 
 func (s *Store) GetUserByEmail(email string) (models.User, error) {
 	return s.scanUser(s.DB.QueryRow(
-		`SELECT id, email, password_hash, name, COALESCE(phone, ''), is_admin, created_at, updated_at
+		`SELECT id, email, password_hash, name, COALESCE(phone, ''), COALESCE(profile_photo_key, ''), COALESCE(profile_photo_content_type, ''), is_admin, created_at, updated_at
 		 FROM users WHERE email = $1`, email))
 }
 
 func (s *Store) GetUserByID(id string) (models.User, error) {
 	return s.scanUser(s.DB.QueryRow(
-		`SELECT id, email, password_hash, name, COALESCE(phone, ''), is_admin, created_at, updated_at
+		`SELECT id, email, password_hash, name, COALESCE(phone, ''), COALESCE(profile_photo_key, ''), COALESCE(profile_photo_content_type, ''), is_admin, created_at, updated_at
 		 FROM users WHERE id = $1`, id))
 }
 
@@ -66,6 +66,22 @@ func (s *Store) UpdateUserProfile(id, name, phone string) (models.User, error) {
 	return s.GetUserByID(id)
 }
 
+func (s *Store) UpdateUserProfilePhoto(id, key, contentType string) (models.User, error) {
+	err := s.DB.QueryRow(
+		`UPDATE users SET profile_photo_key = $2, profile_photo_content_type = $3, updated_at = now()
+                 WHERE id = $1
+                 RETURNING id`,
+		id, nullIfEmpty(key), nullIfEmpty(contentType),
+	).Scan(&id)
+	if err == sql.ErrNoRows {
+		return models.User{}, ErrNotFound
+	}
+	if err != nil {
+		return models.User{}, err
+	}
+	return s.GetUserByID(id)
+}
+
 // PromoteToAdmin sets is_admin = TRUE for the given email, if that user
 // exists. It is a no-op (not an error) if the user hasn't registered yet.
 func (s *Store) PromoteToAdmin(email string) error {
@@ -75,7 +91,7 @@ func (s *Store) PromoteToAdmin(email string) error {
 
 func (s *Store) ListUsers() ([]models.User, error) {
 	rows, err := s.DB.Query(
-		`SELECT id, email, password_hash, name, COALESCE(phone, ''), is_admin, created_at, updated_at
+		`SELECT id, email, password_hash, name, COALESCE(phone, ''), COALESCE(profile_photo_key, ''), COALESCE(profile_photo_content_type, ''), is_admin, created_at, updated_at
 		 FROM users ORDER BY created_at DESC`)
 	if err != nil {
 		return nil, err
@@ -85,7 +101,7 @@ func (s *Store) ListUsers() ([]models.User, error) {
 	users := []models.User{}
 	for rows.Next() {
 		var u models.User
-		if err := rows.Scan(&u.ID, &u.Email, &u.PasswordHash, &u.Name, &u.Phone, &u.IsAdmin, &u.CreatedAt, &u.UpdatedAt); err != nil {
+		if err := rows.Scan(&u.ID, &u.Email, &u.PasswordHash, &u.Name, &u.Phone, &u.ProfilePhotoKey, &u.ProfilePhotoContentType, &u.IsAdmin, &u.CreatedAt, &u.UpdatedAt); err != nil {
 			return nil, err
 		}
 		users = append(users, u)
@@ -95,7 +111,7 @@ func (s *Store) ListUsers() ([]models.User, error) {
 
 func (s *Store) scanUser(row *sql.Row) (models.User, error) {
 	var u models.User
-	err := row.Scan(&u.ID, &u.Email, &u.PasswordHash, &u.Name, &u.Phone, &u.IsAdmin, &u.CreatedAt, &u.UpdatedAt)
+	err := row.Scan(&u.ID, &u.Email, &u.PasswordHash, &u.Name, &u.Phone, &u.ProfilePhotoKey, &u.ProfilePhotoContentType, &u.IsAdmin, &u.CreatedAt, &u.UpdatedAt)
 	if err == sql.ErrNoRows {
 		return models.User{}, ErrNotFound
 	}
@@ -119,4 +135,3 @@ func isUniqueViolation(err error) bool {
 	}
 	return false
 }
-

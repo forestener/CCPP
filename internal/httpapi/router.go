@@ -13,12 +13,13 @@ import (
 )
 
 type API struct {
-	Store        *store.Store
-	Processor    *processor.Processor
-	JWTSecret    []byte
-	TokenTTL     time.Duration
-	LoginLimiter *auth.LoginLimiter
-	AdminEmail   string
+	Store           *store.Store
+	Processor       *processor.Processor
+	JWTSecret       []byte
+	TokenTTL        time.Duration
+	LoginLimiter    *auth.LoginLimiter
+	AdminEmail      string
+	ProfilePhotoDir string
 }
 
 func NewRouter(api *API, webDir string) http.Handler {
@@ -39,6 +40,8 @@ func NewRouter(api *API, webDir string) http.Handler {
 	mux.HandleFunc("GET /scanner-auth-check", auth1(api.handleScannerAuthCheck))
 	mux.HandleFunc("GET /api/me", auth1(api.handleGetMe))
 	mux.HandleFunc("PATCH /api/me", auth1(api.handleUpdateMe))
+	mux.HandleFunc("GET /api/me/photo", auth1(api.handleGetMyProfilePhoto))
+	mux.HandleFunc("POST /api/me/photo", auth1(api.handleUploadMyProfilePhoto))
 	mux.HandleFunc("POST /api/payment-methods", auth1(api.handleCreatePaymentMethod))
 	mux.HandleFunc("GET /api/payment-methods", auth1(api.handleListPaymentMethods))
 	mux.HandleFunc("DELETE /api/payment-methods/{id}", auth1(api.handleDeletePaymentMethod))

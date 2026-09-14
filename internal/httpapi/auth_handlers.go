@@ -24,11 +24,12 @@ type authResponse struct {
 }
 
 type userSummary struct {
-	ID      string `json:"id"`
-	Email   string `json:"email"`
-	Name    string `json:"name"`
-	Phone   string `json:"phone,omitempty"`
-	IsAdmin bool   `json:"is_admin"`
+	ID              string `json:"id"`
+	Email           string `json:"email"`
+	Name            string `json:"name"`
+	Phone           string `json:"phone,omitempty"`
+	ProfilePhotoURL string `json:"profile_photo_url,omitempty"`
+	IsAdmin         bool   `json:"is_admin"`
 }
 
 func (api *API) handleRegister(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +82,7 @@ func (api *API) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusCreated, authResponse{Token: token, User: toUserSummary(user.ID, user.Email, user.Name, user.Phone, user.IsAdmin)})
+	writeJSON(w, http.StatusCreated, authResponse{Token: token, User: toUserSummary(user.ID, user.Email, user.Name, user.Phone, profilePhotoURLForUser(user), user.IsAdmin)})
 }
 
 type loginRequest struct {
@@ -122,7 +123,7 @@ func (api *API) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, authResponse{Token: token, User: toUserSummary(user.ID, user.Email, user.Name, user.Phone, user.IsAdmin)})
+	writeJSON(w, http.StatusOK, authResponse{Token: token, User: toUserSummary(user.ID, user.Email, user.Name, user.Phone, profilePhotoURLForUser(user), user.IsAdmin)})
 }
 
 func (api *API) handleScannerLogin(w http.ResponseWriter, r *http.Request) {
@@ -208,6 +209,13 @@ func (api *API) handleLogout(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "logged out"})
 }
 
-func toUserSummary(id, email, name, phone string, isAdmin bool) userSummary {
-	return userSummary{ID: id, Email: email, Name: name, Phone: phone, IsAdmin: isAdmin}
+func toUserSummary(id, email, name, phone, profilePhotoURL string, isAdmin bool) userSummary {
+	return userSummary{
+		ID:              id,
+		Email:           email,
+		Name:            name,
+		Phone:           phone,
+		ProfilePhotoURL: profilePhotoURL,
+		IsAdmin:         isAdmin,
+	}
 }
